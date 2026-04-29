@@ -9,6 +9,7 @@ import streamlit.components.v1 as components
 
 from analyzers import (
     analyze_achievements_block,
+    analyze_bullet,
     render_strength_chip,
     score_resume_health,
 )
@@ -660,7 +661,7 @@ with st.sidebar:
 # Main Tabs
 # ─────────────────────────────────────────────────────────────────────────────
 
-T_PERSONAL, T_EDU, T_EXP, T_SKILLS, T_PROJ, T_CERTS, T_MATCH, T_PREVIEW = st.tabs([
+T_PERSONAL, T_EDU, T_EXP, T_SKILLS, T_PROJ, T_CERTS, T_MATCH, T_AB, T_PREVIEW = st.tabs([
     "👤 Personal",
     "🎓 Education",
     "💼 Experience",
@@ -668,6 +669,7 @@ T_PERSONAL, T_EDU, T_EXP, T_SKILLS, T_PROJ, T_CERTS, T_MATCH, T_PREVIEW = st.tab
     "🚀 Projects",
     "🏆 Certifications",
     "🎯 JD Match",
+    "🧪 A/B Test",
     "👁️ Preview & Export",
 ])
 
@@ -1027,6 +1029,156 @@ with T_MATCH:
                 "in the corpus. 70+ is a strong match, 45-69 is partial, "
                 "below 45 means the resume needs work for this posting."
             )
+
+
+# ── A/B Test ─────────────────────────────────────────────────────────────────
+with T_AB:
+    st.header("A/B Bullet Test")
+    st.caption(
+        "Paste two versions of the same bullet. The analyzer scores each one "
+        "the same way it scores live bullets in your Experience tab — strong "
+        "verb, quantified outcome, length sweet spot — and tells you which "
+        "version reads stronger and why."
+    )
+
+    if "ab_a" not in st.session_state: st.session_state.ab_a = ""
+    if "ab_b" not in st.session_state: st.session_state.ab_b = ""
+
+    abc1, abc2 = st.columns(2, gap="medium")
+
+    def _ab_panel(col, label: str, key: str, placeholder: str):
+        with col:
+            st.markdown(
+                f"<div style='font-family:JetBrains Mono,monospace;font-size:.78rem;"
+                f"color:#94a3b8;letter-spacing:.12em;text-transform:uppercase;"
+                f"margin-bottom:6px'>// Version {label}</div>",
+                unsafe_allow_html=True,
+            )
+            text = st.text_area(
+                f"Bullet {label}",
+                value=st.session_state[key],
+                key=f"ab_input_{label}",
+                height=120,
+                placeholder=placeholder,
+                label_visibility="collapsed",
+            )
+            st.session_state[key] = text
+            if text.strip():
+                a = analyze_bullet(text)
+                ring_color = "#10b981" if a["score"] == 3 else "#f59e0b" if a["score"] == 2 else "#ef4444"
+                ring_label = "STRONG" if a["score"] == 3 else "MEDIUM" if a["score"] == 2 else "WEAK"
+                st.markdown(
+                    f"""
+                    <div style='display:flex;align-items:center;gap:14px;
+                                margin:10px 0 4px;padding:10px 14px;
+                                background:rgba(255,255,255,.025);
+                                border:1px solid rgba(148,163,184,.15);
+                                border-radius:10px;'>
+                        <div style='width:46px;height:46px;border-radius:50%;
+                                    border:3px solid {ring_color};
+                                    display:flex;align-items:center;justify-content:center;
+                                    font-family:Space Grotesk,Inter,sans-serif;
+                                    font-size:1.15rem;font-weight:700;
+                                    color:{ring_color};'>{a["score"]}</div>
+                        <div style='flex:1'>
+                            <div style='font-family:JetBrains Mono,monospace;font-size:.7rem;
+                                        color:{ring_color};letter-spacing:.10em;
+                                        font-weight:600'>{ring_label}</div>
+                            <div style='font-size:.78rem;color:#94a3b8;margin-top:2px'>
+                                {a["length"]} chars
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f"<div style='margin-top:4px'>{render_strength_chip(a)}</div>",
+                    unsafe_allow_html=True,
+                )
+                return a
+        return None
+
+    a_score = _ab_panel(abc1, "A", "ab_a", "Worked on the team to ship features.")
+    b_score = _ab_panel(abc2, "B", "ab_b", "Led 4-engineer team to ship 9 features in 12 months, lifting retention from 41% to 58%.")
+
+    # Verdict + breakdown when both bullets are filled
+    if a_score and b_score:
+        st.markdown("---")
+
+        if a_score["score"] > b_score["score"]:
+            winner, w_color = "A", "#22d3ee"
+            verdict = f"**Version A** scores higher ({a_score['score']} vs {b_score['score']})."
+        elif b_score["score"] > a_score["score"]:
+            winner, w_color = "B", "#a78bfa"
+            verdict = f"**Version B** scores higher ({b_score['score']} vs {a_score['score']})."
+        else:
+            winner, w_color = "tie", "#94a3b8"
+            verdict = f"**Tie** at {a_score['score']}/3. Tighten one of them on the dimension that's still missing."
+
+        st.markdown(
+            f"""
+            <div style='padding:14px 18px;border-radius:12px;
+                        background:linear-gradient(135deg, rgba(34,211,238,.06), rgba(167,139,250,.06));
+                        border:1px solid {w_color}40;
+                        margin-bottom:16px;'>
+                <div style='font-family:JetBrains Mono,monospace;font-size:.72rem;
+                            color:{w_color};letter-spacing:.12em;
+                            text-transform:uppercase;margin-bottom:6px;font-weight:600'>
+                    Verdict
+                </div>
+                <div style='color:#e8eaf0;font-size:.95rem;line-height:1.55'>{verdict}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Side-by-side dimension breakdown
+        def _row(label: str, a_ok: bool, b_ok: bool):
+            mark = lambda ok: f"<span style='color:{'#10b981' if ok else '#ef4444'};font-weight:700'>{'YES' if ok else 'NO'}</span>"
+            return (
+                f"<tr>"
+                f"<td style='padding:8px 12px;color:#94a3b8;font-size:.82rem;border-bottom:1px solid rgba(148,163,184,.12)'>{label}</td>"
+                f"<td style='padding:8px 12px;text-align:center;border-bottom:1px solid rgba(148,163,184,.12);font-family:JetBrains Mono,monospace;font-size:.78rem'>{mark(a_ok)}</td>"
+                f"<td style='padding:8px 12px;text-align:center;border-bottom:1px solid rgba(148,163,184,.12);font-family:JetBrains Mono,monospace;font-size:.78rem'>{mark(b_ok)}</td>"
+                f"</tr>"
+            )
+
+        st.markdown(
+            f"""
+            <table style='width:100%;border-collapse:collapse;
+                          background:rgba(255,255,255,.025);
+                          border:1px solid rgba(148,163,184,.15);
+                          border-radius:10px;overflow:hidden;
+                          font-family:Inter,sans-serif;'>
+                <thead>
+                    <tr style='background:rgba(255,255,255,.03)'>
+                        <th style='padding:10px 12px;text-align:left;
+                                   color:#94a3b8;font-size:.74rem;
+                                   font-family:JetBrains Mono,monospace;
+                                   text-transform:uppercase;letter-spacing:.10em;
+                                   font-weight:500'>Dimension</th>
+                        <th style='padding:10px 12px;text-align:center;
+                                   color:#22d3ee;font-size:.74rem;
+                                   font-family:JetBrains Mono,monospace;
+                                   text-transform:uppercase;letter-spacing:.10em;
+                                   font-weight:600'>Version A</th>
+                        <th style='padding:10px 12px;text-align:center;
+                                   color:#a78bfa;font-size:.74rem;
+                                   font-family:JetBrains Mono,monospace;
+                                   text-transform:uppercase;letter-spacing:.10em;
+                                   font-weight:600'>Version B</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {_row("Strong opening verb", a_score["has_action_verb"], b_score["has_action_verb"])}
+                    {_row("Quantified outcome", a_score["has_number"], b_score["has_number"])}
+                    {_row("Length sweet spot (30 to 200)", a_score["length_ok"], b_score["length_ok"])}
+                </tbody>
+            </table>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 # ── Preview & Export ─────────────────────────────────────────────────────────
