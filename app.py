@@ -12,6 +12,11 @@ from analyzers import (
     render_strength_chip,
     score_resume_health,
 )
+from jd_match import (
+    extract_jd_keywords,
+    match_resume,
+    render_chip_row,
+)
 
 st.set_page_config(
     page_title="Resume & Portfolio Builder",
@@ -608,13 +613,14 @@ with st.sidebar:
 # Main Tabs
 # ─────────────────────────────────────────────────────────────────────────────
 
-T_PERSONAL, T_EDU, T_EXP, T_SKILLS, T_PROJ, T_CERTS, T_PREVIEW = st.tabs([
+T_PERSONAL, T_EDU, T_EXP, T_SKILLS, T_PROJ, T_CERTS, T_MATCH, T_PREVIEW = st.tabs([
     "👤 Personal",
     "🎓 Education",
     "💼 Experience",
     "🛠️ Skills",
     "🚀 Projects",
     "🏆 Certifications",
+    "🎯 JD Match",
     "👁️ Preview & Export",
 ])
 
@@ -819,6 +825,161 @@ with T_CERTS:
             if st.button("🗑", key=f"c_del_{i}", help="Remove"):
                 D["certifications"].pop(i)
                 st.rerun()
+
+
+# ── JD Match ─────────────────────────────────────────────────────────────────
+with T_MATCH:
+    st.header("Job Description Match")
+    st.caption(
+        "Paste a job description below. The matcher pulls the most signal-rich "
+        "keywords (single words and phrases), then checks which ones already "
+        "appear in your bullets, summary, skills, and projects. Missing chips "
+        "are the top gaps to close before applying."
+    )
+
+    if "jd_text" not in st.session_state:
+        st.session_state.jd_text = ""
+
+    jdc1, jdc2 = st.columns([3, 2])
+
+    with jdc1:
+        jd_input = st.text_area(
+            "Paste job description",
+            value=st.session_state.jd_text,
+            key="jd_text_area",
+            height=320,
+            placeholder=(
+                "We're looking for a Senior Software Engineer to lead our "
+                "platform team. You'll architect distributed systems on "
+                "Kubernetes, mentor engineers, and drive observability "
+                "improvements across the stack..."
+            ),
+        )
+        st.session_state.jd_text = jd_input
+
+    with jdc2:
+        if (jd_input or "").strip():
+            res = match_resume(D, jd_input)
+            score = res["score"]
+            color = "#10b981" if score >= 70 else "#f59e0b" if score >= 45 else "#ef4444"
+            label = "Strong match" if score >= 70 else "Partial match" if score >= 45 else "Light match"
+
+            st.markdown(
+                f"""
+                <div style="
+                    padding:18px 20px;
+                    border-radius:12px;
+                    border:1px solid rgba(148,163,184,.20);
+                    background:linear-gradient(135deg,
+                        rgba(34,211,238,.04) 0%,
+                        rgba(167,139,250,.04) 100%);
+                ">
+                    <div style="
+                        font-family:'JetBrains Mono',ui-monospace,monospace;
+                        font-size:11px;
+                        color:#94a3b8;
+                        letter-spacing:.12em;
+                        text-transform:uppercase;
+                        margin-bottom:6px;
+                    ">// JD Match Score</div>
+                    <div style="
+                        font-family:'Space Grotesk','Inter',sans-serif;
+                        font-size:2.6rem;
+                        font-weight:700;
+                        color:{color};
+                        line-height:1;
+                        letter-spacing:-.02em;
+                    ">{score}<span style="
+                        font-size:1.0rem;
+                        color:#94a3b8;
+                        font-weight:500;
+                        margin-left:2px;
+                    ">/100</span></div>
+                    <div style="
+                        font-size:.85rem;
+                        color:{color};
+                        margin-top:4px;
+                        font-weight:500;
+                    ">{label}</div>
+                    <div style="
+                        font-size:.78rem;
+                        color:#94a3b8;
+                        margin-top:8px;
+                        line-height:1.5;
+                    ">Matched <strong style="color:#e8eaf0">{res['matched_kw']}</strong>
+                    of <strong style="color:#e8eaf0">{res['total_kw']}</strong> keywords</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                """
+                <div style="
+                    padding:24px 20px;
+                    border-radius:12px;
+                    border:1px dashed rgba(148,163,184,.25);
+                    background:rgba(255,255,255,.02);
+                    text-align:center;
+                ">
+                    <div style="font-size:1.6rem;margin-bottom:6px">🎯</div>
+                    <div style="
+                        color:#94a3b8;
+                        font-size:.86rem;
+                        line-height:1.55;
+                    ">Paste a job description to see your match score and the keywords your resume is missing.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    if (jd_input or "").strip():
+        st.markdown("---")
+
+        res_full = match_resume(D, jd_input, top_missing=12)
+
+        st.markdown(
+            f"<div style='font-family:Inter,sans-serif;font-size:.95rem;font-weight:600;"
+            f"color:#10b981;margin-bottom:6px'>"
+            f"✓ Matched in your resume "
+            f"<span style='color:#94a3b8;font-weight:400;font-size:.82rem'>"
+            f"({len(res_full['matched'])})</span></div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<div style='line-height:2.0'>{render_chip_row(res_full['matched'][:30], 'ok')}</div>",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+
+        st.markdown(
+            f"<div style='font-family:Inter,sans-serif;font-size:.95rem;font-weight:600;"
+            f"color:#f59e0b;margin-bottom:6px'>"
+            f"○ Top gaps to address "
+            f"<span style='color:#94a3b8;font-weight:400;font-size:.82rem'>"
+            f"({len(res_full['missing'])})</span></div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<div style='line-height:2.0'>{render_chip_row(res_full['missing'], 'miss')}</div>",
+            unsafe_allow_html=True,
+        )
+
+        with st.expander("How is this calculated?"):
+            st.markdown(
+                "- The matcher tokenizes the JD, drops stopwords + filler "
+                "(\"team\", \"experience\", \"role\", etc.), and ranks the "
+                "remaining single words and 2-word phrases by frequency.\n"
+                "- Phrases get a 1.6x weight bonus because they carry more "
+                "signal than single words.\n"
+                "- Your resume corpus is everything an ATS would scan: "
+                "bullets, summary, skills, project highlights, position "
+                "titles, certifications.\n"
+                "- The score is the percentage of weighted keywords present "
+                "in the corpus. 70+ is a strong match, 45-69 is partial, "
+                "below 45 means the resume needs work for this posting."
+            )
 
 
 # ── Preview & Export ─────────────────────────────────────────────────────────
