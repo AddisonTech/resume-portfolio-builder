@@ -72,3 +72,26 @@ html[data-theme='light'] body {
   background: #f7f7fb;
   color: #0f172a;
 }
+
+html[data-theme='light'] {
+  --bg-0: #f7f7fb;
+  --bg-1: #ffffff;
+  --bg-2: #f1f3f9;
+  --bg-card: rgba(15, 23, 42, 0.04);
+  --bg-card-h: rgba(15, 23, 42, 0.07);
+  --text-0: #0f172a;
+  --text-1: #475569;
+  --text-2: #94a3b8;
+  --border: rgba(15, 23, 42, 0.10);
+  --border-a: rgba(34, 211, 238, 0.40);
+}
+
+@media (max-width: 880px) {
+  .app-shell {
+    grid-template-columns: 1fr !important;
+  }
+  .app-shell > aside {
+    height: auto !important;
+    position: static !important;
+  }
+}

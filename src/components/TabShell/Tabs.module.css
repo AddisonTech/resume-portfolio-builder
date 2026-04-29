@@ -1,0 +1,70 @@
+.tabBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 4px;
+  margin-bottom: 24px;
+  position: sticky;
+  top: 0;
+  background: var(--bg-0);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-1);
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--ff-sans);
+  cursor: pointer;
+  position: relative;
+  transition: color var(--t);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab:hover {
+  color: var(--text-0);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.tabActive {
+  color: var(--text-0);
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+.glyph {
+  font-family: var(--ff-mono);
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.tabActive .glyph {
+  color: var(--accent);
+}
+
+.panel {
+  padding: 0 4px 64px;
+}

@@ -1,0 +1,207 @@
+.sidebar {
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+  padding: 22px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brandTitle {
+  font-family: var(--ff-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.brandTag {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: var(--text-1);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionTitle {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-1);
+  margin: 0;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.tplGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.tplBtn {
+  appearance: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  padding: 8px 6px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-family: var(--ff-sans);
+  cursor: pointer;
+  transition: all var(--t);
+}
+
+.tplBtn:hover {
+  color: var(--text-0);
+  border-color: var(--border-a);
+}
+
+.tplBtnActive {
+  color: var(--text-0);
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.colorPick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.colorBox {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+  appearance: none;
+}
+
+.colorBox::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.colorBox::-webkit-color-swatch {
+  border: none;
+  border-radius: var(--r-sm);
+}
+
+.colorHex {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--text-0);
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggleLabel {
+  font-size: 13px;
+  color: var(--text-0);
+}
+
+.switch {
+  --w: 38px;
+  --h: 22px;
+  width: var(--w);
+  height: var(--h);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--t);
+}
+
+.switchOn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.switchKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--text-0);
+  border-radius: 50%;
+  transition: transform var(--t);
+}
+
+.switchOn .switchKnob {
+  transform: translateX(16px);
+  background: #061018;
+}
+
+.fileBtn {
+  appearance: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-0);
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+  transition: background var(--t), border-color var(--t);
+}
+
+.fileBtn:hover {
+  background: var(--bg-card-h);
+  border-color: var(--border-a);
+}
+
+.error {
+  color: var(--bad);
+  font-size: 11px;
+  font-family: var(--ff-mono);
+}
+
+.foot {
+  margin-top: auto;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
