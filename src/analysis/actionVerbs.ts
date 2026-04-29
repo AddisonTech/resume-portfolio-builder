@@ -1,0 +1,26 @@
+// Strong action verbs (lowercase). Ported verbatim from analyzers.py ACTION_VERBS.
+
+export const ACTION_VERBS: ReadonlySet<string> = new Set<string>([
+  'built', 'led', 'shipped', 'reduced', 'designed', 'developed', 'architected',
+  'deployed', 'scaled', 'optimized', 'automated', 'owned', 'drove', 'launched',
+  'delivered', 'mentored', 'partnered', 'pioneered', 'accelerated', 'increased',
+  'decreased', 'generated', 'saved', 'eliminated', 'streamlined', 'refactored',
+  'migrated', 'integrated', 'established', 'implemented', 'created', 'founded',
+  'headed', 'managed', 'directed', 'oversaw', 'coordinated', 'executed',
+  'achieved', 'exceeded', 'surpassed', 'awarded', 'recognized', 'presented',
+  'published', 'taught', 'trained', 'coached', 'supervised', 'organized',
+  'planned', 'prioritized', 'resolved', 'solved', 'identified', 'analyzed',
+  'researched', 'evaluated', 'assessed', 'audited', 'tested', 'validated',
+  'verified', 'debugged', 'diagnosed', 'fixed', 'repaired', 'configured',
+  'installed', 'maintained', 'monitored', 'troubleshot', 'calibrated',
+  'commissioned', 'programmed', 'coded', 'engineered', 'modeled', 'simulated',
+  'prototyped', 'fabricated', 'assembled', 'manufactured', 'produced',
+  'supplied', 'sourced', 'negotiated', 'contracted', 'sold', 'marketed',
+  'promoted', 'advertised', 'branded', 'drafted', 'sketched', 'illustrated',
+  'animated', 'edited', 'composed', 'wrote', 'authored', 'reviewed',
+  'approved', 'certified', 'qualified', 'accredited', 'licensed', 'chaired',
+  'spearheaded', 'championed', 'advocated', 'influenced', 'persuaded',
+  'convinced', 'secured', 'won', 'captured', 'acquired', 'recovered',
+  'rescued', 'rebuilt', 'restructured', 'transformed', 'modernized',
+  'revamped',
+]);
