@@ -380,84 +380,125 @@ def _safe(text: str) -> str:
     return (text or "").encode("latin-1", errors="replace").decode("latin-1")
 
 
-def generate_pdf(data: dict) -> bytes:
+def _hex_to_rgb(hex_color: str, fallback=(34, 80, 184)) -> tuple:
+    """Convert #RRGGBB to (r, g, b) ints for fpdf2."""
+    try:
+        h = (hex_color or "").lstrip("#")
+        if len(h) == 3:
+            h = "".join(c * 2 for c in h)
+        if len(h) != 6:
+            return fallback
+        return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+    except Exception:
+        return fallback
+
+
+def generate_pdf(data: dict, accent: str = "#2563EB") -> bytes:
     from fpdf import FPDF
 
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=18)
-    pdf.set_margins(20, 20, 20)
+    pdf.set_margins(18, 18, 18)
     pdf.add_page()
 
     p    = data["personal"]
-    EW   = pdf.w - 2 * pdf.l_margin  # effective width (~170 mm)
+    EW   = pdf.w - 2 * pdf.l_margin   # effective width (~174 mm)
     LM   = pdf.l_margin
+    AR, AG, AB = _hex_to_rgb(accent)
+
+    # Color palette - tighter, more modern hierarchy than the original
+    INK_900 = (15, 23, 42)     # near-black for the name + section headers
+    INK_700 = (51, 65, 85)     # body text and titles
+    INK_500 = (100, 116, 139)  # secondary metadata
+    INK_300 = (203, 213, 225)  # subtle dividers
+    BULLET_GLYPH = "  -  "
 
     # ── helpers ──────────────────────────────────────────────────────────────
 
     def sec_header(title: str):
-        pdf.ln(4)
-        pdf.set_font("Helvetica", "B", 10)
-        pdf.set_text_color(25, 25, 25)
-        pdf.cell(0, 7, title.upper(), new_x="LMARGIN", new_y="NEXT")
-        pdf.set_draw_color(160, 160, 160)
-        pdf.line(LM, pdf.get_y(), LM + EW, pdf.get_y())
-        pdf.ln(3)
+        """Section header: small caps style, with a 2-tone underline rule
+        (accent-colored swatch on the left, hairline grey across)."""
+        pdf.ln(4.5)
+        pdf.set_font("Helvetica", "B", 10.5)
+        pdf.set_text_color(*INK_900)
+        pdf.cell(0, 6.5, _safe(title.upper()), new_x="LMARGIN", new_y="NEXT")
+        # Accent swatch + hairline rule
+        y = pdf.get_y() + 0.8
+        pdf.set_draw_color(AR, AG, AB)
+        pdf.set_line_width(0.7)
+        pdf.line(LM, y, LM + 14, y)
+        pdf.set_draw_color(*INK_300)
+        pdf.set_line_width(0.2)
+        pdf.line(LM + 14, y, LM + EW, y)
+        pdf.set_line_width(0.2)
+        pdf.ln(3.5)
 
-    def two_cell(left: str, right: str, bold_left: bool = True, sz_l: int = 10, sz_r: int = 9):
+    def two_cell(left: str, right: str, bold_left: bool = True, sz_l: int = 10.5, sz_r: int = 9):
+        """Left-aligned strong title with a right-aligned date/meta column."""
         pdf.set_font("Helvetica", "B" if bold_left else "", sz_l)
-        pdf.set_text_color(25, 25, 25)
+        pdf.set_text_color(*INK_900)
         rw = pdf.get_string_width(_safe(right)) + 4
         pdf.cell(EW - rw, 6, _safe(left), new_x="RIGHT", new_y="TOP")
         pdf.set_font("Helvetica", "", sz_r)
-        pdf.set_text_color(130, 130, 130)
+        pdf.set_text_color(*INK_500)
         pdf.cell(rw, 6, _safe(right), align="R", new_x="LMARGIN", new_y="NEXT")
-        pdf.set_text_color(50, 50, 50)
 
     def sub_line(text: str):
         pdf.set_font("Helvetica", "I", 9.5)
-        pdf.set_text_color(90, 90, 90)
+        pdf.set_text_color(*INK_500)
         pdf.cell(0, 5, _safe(text), new_x="LMARGIN", new_y="NEXT")
 
     def body_text(text: str):
-        pdf.set_font("Helvetica", "", 9.5)
-        pdf.set_text_color(60, 60, 60)
-        pdf.multi_cell(0, 5, _safe(text))
+        pdf.set_font("Helvetica", "", 9.7)
+        pdf.set_text_color(*INK_700)
+        pdf.multi_cell(0, 5.2, _safe(text))
 
     def bullets(text: str):
         for line in text.split("\n"):
             line = line.strip()
             if not line:
                 continue
-            pdf.set_font("Helvetica", "", 9.5)
-            pdf.set_text_color(60, 60, 60)
-            pdf.cell(5, 5, "-", new_x="RIGHT", new_y="TOP")
-            pdf.multi_cell(EW - 5, 5, _safe(line))
+            # Accent-colored bullet glyph, then dim body text.
+            pdf.set_font("Helvetica", "B", 9.7)
+            pdf.set_text_color(AR, AG, AB)
+            pdf.cell(6, 5.2, BULLET_GLYPH, new_x="RIGHT", new_y="TOP")
+            pdf.set_font("Helvetica", "", 9.7)
+            pdf.set_text_color(*INK_700)
+            pdf.multi_cell(EW - 6, 5.2, _safe(line))
 
-    # ── Name / header ────────────────────────────────────────────────────────
-    pdf.set_font("Helvetica", "B", 22)
-    pdf.set_text_color(20, 20, 20)
-    pdf.cell(0, 10, _safe(p.get("name", "")), new_x="LMARGIN", new_y="NEXT")
+    # ── Name / header band ───────────────────────────────────────────────────
+    pdf.set_font("Helvetica", "B", 24)
+    pdf.set_text_color(*INK_900)
+    pdf.cell(0, 10.5, _safe(p.get("name", "")), new_x="LMARGIN", new_y="NEXT")
 
     if p.get("title"):
+        # Title in accent color - subtle branding lift
         pdf.set_font("Helvetica", "", 12)
-        pdf.set_text_color(80, 80, 80)
+        pdf.set_text_color(AR, AG, AB)
         pdf.cell(0, 6, _safe(p["title"]), new_x="LMARGIN", new_y="NEXT")
 
     contact_items = [x for x in [p.get("email"), p.get("phone"), p.get("location")] if x]
     if contact_items:
         pdf.set_font("Helvetica", "", 9)
-        pdf.set_text_color(110, 110, 110)
-        pdf.cell(0, 5, "  |  ".join(_safe(c) for c in contact_items), new_x="LMARGIN", new_y="NEXT")
+        pdf.set_text_color(*INK_500)
+        pdf.cell(0, 5, "   ".join(_safe(c) for c in contact_items), new_x="LMARGIN", new_y="NEXT")
 
     link_items = [x for x in [p.get("linkedin"), p.get("github"), p.get("website")] if x]
     if link_items:
         pdf.set_font("Helvetica", "", 9)
-        pdf.set_text_color(110, 110, 110)
-        pdf.cell(0, 5, "  |  ".join(_safe(l) for l in link_items), new_x="LMARGIN", new_y="NEXT")
+        pdf.set_text_color(*INK_500)
+        pdf.cell(0, 5, "   ".join(_safe(l) for l in link_items), new_x="LMARGIN", new_y="NEXT")
 
+    # Header divider - 2-tone accent + hairline
     pdf.ln(3)
-    pdf.set_draw_color(180, 180, 180)
-    pdf.line(LM, pdf.get_y(), LM + EW, pdf.get_y())
+    y = pdf.get_y()
+    pdf.set_draw_color(AR, AG, AB)
+    pdf.set_line_width(0.9)
+    pdf.line(LM, y, LM + 28, y)
+    pdf.set_draw_color(*INK_300)
+    pdf.set_line_width(0.25)
+    pdf.line(LM + 28, y, LM + EW, y)
+    pdf.set_line_width(0.2)
 
     # ── Summary ──────────────────────────────────────────────────────────────
     if p.get("summary"):
@@ -502,27 +543,33 @@ def generate_pdf(data: dict) -> bytes:
     # ── Skills ───────────────────────────────────────────────────────────────
     if data["skills"]["categories"]:
         sec_header("Skills")
-        CAT_W = 42
+        CAT_W = 44
         for cat in data["skills"]["categories"]:
             if cat.get("name") or cat.get("items"):
-                pdf.set_font("Helvetica", "B", 9.5)
-                pdf.set_text_color(30, 30, 30)
-                pdf.cell(CAT_W, 5, _safe(cat.get("name", "")), new_x="RIGHT", new_y="TOP")
-                pdf.set_font("Helvetica", "", 9.5)
-                pdf.set_text_color(60, 60, 60)
-                pdf.multi_cell(EW - CAT_W, 5, _safe(cat.get("items", "")))
+                pdf.set_font("Helvetica", "B", 9.6)
+                pdf.set_text_color(AR, AG, AB)
+                pdf.cell(CAT_W, 5.2, _safe(cat.get("name", "")), new_x="RIGHT", new_y="TOP")
+                pdf.set_font("Helvetica", "", 9.6)
+                pdf.set_text_color(*INK_700)
+                pdf.multi_cell(EW - CAT_W, 5.2, _safe(cat.get("items", "")))
         pdf.ln(2)
 
     # ── Projects ─────────────────────────────────────────────────────────────
     if data["projects"]:
         sec_header("Projects")
         for proj in data["projects"]:
-            title_str = proj.get("name", "")
-            if proj.get("tech"):
-                title_str += f'  |  {proj["tech"]}'
-            pdf.set_font("Helvetica", "B", 10)
-            pdf.set_text_color(25, 25, 25)
-            pdf.cell(0, 6, _safe(title_str), new_x="LMARGIN", new_y="NEXT")
+            name = proj.get("name", "")
+            tech = proj.get("tech", "")
+            pdf.set_font("Helvetica", "B", 10.5)
+            pdf.set_text_color(*INK_900)
+            if tech:
+                tech_w = pdf.get_string_width(_safe(tech)) + 4
+                pdf.cell(EW - tech_w, 6, _safe(name), new_x="RIGHT", new_y="TOP")
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(AR, AG, AB)
+                pdf.cell(tech_w, 6, _safe(tech), align="R", new_x="LMARGIN", new_y="NEXT")
+            else:
+                pdf.cell(0, 6, _safe(name), new_x="LMARGIN", new_y="NEXT")
             if proj.get("description"):
                 body_text(proj["description"])
             if proj.get("highlights"):
@@ -987,7 +1034,7 @@ with T_PREVIEW:
     st.header("Preview & Export")
 
     html_out = generate_html(D, template, accent)
-    pdf_out  = generate_pdf(D)
+    pdf_out  = generate_pdf(D, accent)
 
     c1, c2, c3, _ = st.columns([1, 1, 1, 3])
     with c1:
