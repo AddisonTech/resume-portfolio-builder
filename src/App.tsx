@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { Tabs, type TabDef } from './components/TabShell/Tabs';
+import { AbTestTab } from './components/tabs/AbTestTab';
 import { CertsTab } from './components/tabs/CertsTab';
 import { EducationTab } from './components/tabs/EducationTab';
 import { ExperienceTab } from './components/tabs/ExperienceTab';
+import { JdMatchTab } from './components/tabs/JdMatchTab';
 import { PersonalTab } from './components/tabs/PersonalTab';
 import { ProjectsTab } from './components/tabs/ProjectsTab';
 import { SkillsTab } from './components/tabs/SkillsTab';
@@ -16,6 +18,8 @@ const FORM_TABS: TabDef[] = [
   { id: 'skills', label: 'Skills', glyph: '04', render: () => <SkillsTab /> },
   { id: 'projects', label: 'Projects', glyph: '05', render: () => <ProjectsTab /> },
   { id: 'certs', label: 'Certifications', glyph: '06', render: () => <CertsTab /> },
+  { id: 'jd', label: 'JD Match', glyph: '07', render: () => <JdMatchTab /> },
+  { id: 'ab', label: 'A/B Test', glyph: '08', render: () => <AbTestTab /> },
 ];
 
 export default function App() {
