@@ -1,5 +1,7 @@
 # Resume & Portfolio Builder
 
+> **Migration in progress** — this project is being ported from Streamlit to a static React + TypeScript single-page app deployed on GitHub Pages. The original Python sources still live in this repo; once parity is reached they will be removed.
+
 A clean, browser-based resume builder built with **Streamlit**. Fill in your details, live-preview the result in three templates, and export to **PDF**, **HTML**, or **JSON**.
 
 ## Screenshots

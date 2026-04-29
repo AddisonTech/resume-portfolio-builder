@@ -1,0 +1,74 @@
+/* Design tokens — mirrored from AddisonTech.github.io/styles.css :root */
+:root {
+  /* Backgrounds */
+  --bg-0: #06060f;
+  --bg-1: #0c0c1a;
+  --bg-2: #111122;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-h: rgba(255, 255, 255, 0.07);
+
+  /* Brand */
+  --cyan: #22d3ee;
+  --violet: #a78bfa;
+  --gradient: linear-gradient(135deg, #22d3ee 0%, #a78bfa 100%);
+
+  /* Text */
+  --text-0: #f1f5f9;
+  --text-1: #94a3b8;
+  --text-2: #475569;
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-a: rgba(34, 211, 238, 0.25);
+
+  /* Type */
+  --ff-sans: 'Inter', sans-serif;
+  --ff-display: 'Space Grotesk', 'Inter', sans-serif;
+  --ff-mono: 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --t: 180ms var(--ease);
+  --t-lg: 320ms var(--ease);
+
+  /* Active accent (overridable per user) */
+  --accent: #22d3ee;
+
+  /* Status */
+  --good: #10b981;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--ff-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+html[data-theme='light'] body {
+  background: #f7f7fb;
+  color: #0f172a;
+}
