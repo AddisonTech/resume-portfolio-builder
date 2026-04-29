@@ -7,6 +7,7 @@ import { EducationTab } from './components/tabs/EducationTab';
 import { ExperienceTab } from './components/tabs/ExperienceTab';
 import { JdMatchTab } from './components/tabs/JdMatchTab';
 import { PersonalTab } from './components/tabs/PersonalTab';
+import { PreviewTab } from './components/tabs/PreviewTab';
 import { ProjectsTab } from './components/tabs/ProjectsTab';
 import { SkillsTab } from './components/tabs/SkillsTab';
 import { useResumeStore } from './store/useResumeStore';
@@ -20,6 +21,7 @@ const FORM_TABS: TabDef[] = [
   { id: 'certs', label: 'Certifications', glyph: '06', render: () => <CertsTab /> },
   { id: 'jd', label: 'JD Match', glyph: '07', render: () => <JdMatchTab /> },
   { id: 'ab', label: 'A/B Test', glyph: '08', render: () => <AbTestTab /> },
+  { id: 'preview', label: 'Preview', glyph: '09', render: () => <PreviewTab /> },
 ];
 
 export default function App() {
