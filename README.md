@@ -1,81 +1,36 @@
 # Resume & Portfolio Builder
 
-> **Migration in progress** — this project is being ported from Streamlit to a static React + TypeScript single-page app deployed on GitHub Pages. The original Python sources still live in this repo; once parity is reached they will be removed.
+A fully client-side resume builder. Fill in your details, see live bullet-strength scores as you type, match your resume against any job description, A/B test rewrites of the same bullet, and export to PDF, HTML, or JSON. Nothing leaves the browser.
 
-A clean, browser-based resume builder built with **Streamlit**. Fill in your details, live-preview the result in three templates, and export to **PDF**, **HTML**, or **JSON**.
-
-## Screenshots
-
-| Light Mode | Dark Mode |
-|---|---|
-| ![Light Mode](screenshots/app_main.png) | ![Dark Mode](screenshots/app_dark.png) |
-
-![Resume Preview](screenshots/app_preview.png)
+**Live demo:** https://addisontech.github.io/resume-portfolio-builder/
 
 ## Features
 
-- **3 templates** — Modern (colored header), Classic (formal/serif), Minimal (clean/light)
-- **Custom accent color** via color picker
-- **All standard sections** — Personal Info, Education, Experience, Skills, Projects, Certifications
-- **Live preview** rendered directly in the app
-- **Export to PDF** (via fpdf2) — print-ready, no browser needed
-- **Export to HTML** — self-contained, shareable single file
-- **Save / Load JSON** — persist your data between sessions
-- **Sample data** — one-click demo to see how it looks
+- Nine tabs: Personal, Education, Experience, Skills, Projects, Certifications, JD Match, A/B Test, Preview
+- Live bullet analyzer — strong verb + quantified outcome + length sweet spot, scored as you type
+- Job description matcher — paste a posting, get a score plus matched and missing keyword chips
+- A/B bullet test — score two versions side by side with a dimension-by-dimension verdict
+- Resume health meter — eight-bucket score out of 100 with breakdown
+- Three templates (Modern, Classic, Minimal) with a custom accent color picker
+- Dark mode toggle, persisted to localStorage along with all your form data
+- Exports: standalone HTML, JSON, and PDF (PDF renderer is lazy-loaded so the initial bundle stays small)
 
-## Getting Started
+## Tech stack
+
+- Vite + React 18 + TypeScript
+- Zustand for state, with localStorage persistence
+- @react-pdf/renderer for PDF export, dynamically imported on first click
+- Vitest + jsdom for unit tests
+- Deployed to GitHub Pages via the workflow in `.github/workflows/deploy.yml`
+
+## Local development
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/resume-portfolio-builder.git
-cd resume-portfolio-builder
-
-# 2. Create and activate a virtual environment (recommended)
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS / Linux
-source .venv/bin/activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Run the app
-streamlit run app.py
+npm install
+npm run dev      # vite dev server on http://localhost:5173
+npm test         # vitest run, ~30 parity tests
+npm run build    # tsc -b && vite build, output in dist/
+npm run preview  # serve the built dist/ locally
 ```
 
-The app will open at `http://localhost:8501`.
-
-## Usage
-
-1. **Fill in your details** across the tabs (Personal, Education, Experience, etc.)
-2. **Pick a template and accent color** in the sidebar
-3. Open the **Preview & Export** tab to see the live result
-4. Download as **PDF**, **HTML**, or **JSON**
-
-> **Tip:** Click **📋 Sample Data** in the sidebar to instantly populate a demo resume.
-
-## Project Structure
-
-```
-resume-portfolio-builder/
-├── app.py           # Entire Streamlit application
-├── requirements.txt # Python dependencies
-└── .gitignore
-```
-
-## Tech Stack
-
-| Library | Purpose |
-|---------|---------|
-| [Streamlit](https://streamlit.io) | UI & web server |
-| [fpdf2](https://py-fpdf2.readthedocs.io) | PDF generation |
-
-## Notes
-
-- PDF export uses fpdf2's built-in **Helvetica** font, which supports Latin-1 characters. Non-Latin characters (e.g. Chinese, Arabic) will appear as `?` in the PDF but display correctly in the HTML export.
-- The HTML export is fully self-contained and prints cleanly from any browser.
-
-## License
-
-MIT
+The deploy workflow runs on every push to `main`, builds the app, and publishes to GitHub Pages.
