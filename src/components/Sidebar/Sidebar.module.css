@@ -172,6 +172,38 @@
   background: #061018;
 }
 
+.segGroup {
+  display: inline-flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.segBtn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-1);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-family: var(--ff-sans);
+  cursor: pointer;
+  transition: color var(--t), background var(--t);
+}
+
+.segBtn:hover {
+  color: var(--text-0);
+}
+
+.segBtnActive {
+  background: var(--bg-card-h);
+  color: var(--text-0);
+  border-color: var(--accent);
+}
+
 .fileBtn {
   appearance: none;
   background: var(--bg-card);

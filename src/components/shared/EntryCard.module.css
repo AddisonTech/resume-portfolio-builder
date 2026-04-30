@@ -2,10 +2,10 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: 16px;
+  padding: var(--card-pad);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--card-gap);
   transition: border-color var(--t);
 }
 
@@ -30,6 +30,17 @@
   margin: 0;
   flex: 1;
   min-width: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reorder {
+  display: inline-flex;
+  gap: 2px;
 }
 
 .row2 {

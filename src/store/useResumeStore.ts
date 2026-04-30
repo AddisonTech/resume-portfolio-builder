@@ -10,13 +10,18 @@ import type {
 } from '../types';
 import { defaultResume, emptyCertification, emptyEducation, emptyExperience, emptyProject, emptySkillCategory } from './defaults';
 import { sampleResume } from './sample';
-import { loadFromLocalStorage, saveToLocalStorage } from './persistence';
+import { loadPersistedEnvelope, saveToLocalStorage } from './persistence';
+import { PERSIST_VERSION, type Density, type PersistedEnvelope } from './migrations';
+
+export type { Density };
 
 interface ResumeStoreState {
   data: ResumeData;
   template: TemplateName;
   accent: string;
   darkMode: boolean;
+  density: Density;
+  activeTab: string;
   jdText: string;
   abA: string;
   abB: string;
@@ -28,6 +33,8 @@ interface ResumeStoreActions {
   setAccent: (a: string) => void;
   toggleDarkMode: () => void;
   setDarkMode: (v: boolean) => void;
+  setDensity: (d: Density) => void;
+  setActiveTab: (id: string) => void;
 
   loadSample: () => void;
   clearAll: () => void;
@@ -38,10 +45,12 @@ interface ResumeStoreActions {
   addEducation: () => void;
   updateEducation: (i: number, patch: Partial<Education>) => void;
   removeEducation: (i: number) => void;
+  reorderEducation: (from: number, to: number) => void;
 
   addExperience: () => void;
   updateExperience: (i: number, patch: Partial<Experience>) => void;
   removeExperience: (i: number) => void;
+  reorderExperience: (from: number, to: number) => void;
 
   addSkillCategory: () => void;
   updateSkillCategory: (i: number, patch: Partial<SkillCategory>) => void;
@@ -50,6 +59,7 @@ interface ResumeStoreActions {
   addProject: () => void;
   updateProject: (i: number, patch: Partial<Project>) => void;
   removeProject: (i: number) => void;
+  reorderProject: (from: number, to: number) => void;
 
   addCertification: () => void;
   updateCertification: (i: number, patch: Partial<Certification>) => void;
@@ -64,19 +74,28 @@ export type ResumeStore = ResumeStoreState & ResumeStoreActions;
 
 const STORAGE_KEY = 'resume-portfolio-builder:v1';
 
-interface PersistedState {
-  data: ResumeData;
-  template: TemplateName;
-  accent: string;
-  darkMode: boolean;
-}
+const persisted = loadPersistedEnvelope(STORAGE_KEY);
 
-const persisted = loadFromLocalStorage<PersistedState>(STORAGE_KEY);
+function moveItem<T>(arr: T[], from: number, to: number): T[] {
+  if (from === to || from < 0 || to < 0 || from >= arr.length || to >= arr.length) return arr;
+  const next = arr.slice();
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+}
 
 export const useResumeStore = create<ResumeStore>((set, get) => {
   const persist = () => {
-    const { data, template, accent, darkMode } = get();
-    saveToLocalStorage<PersistedState>(STORAGE_KEY, { data, template, accent, darkMode });
+    const { data, template, accent, darkMode, density } = get();
+    const envelope: PersistedEnvelope = {
+      version: PERSIST_VERSION,
+      data,
+      template,
+      accent,
+      darkMode,
+      density,
+    };
+    saveToLocalStorage(STORAGE_KEY, envelope);
   };
 
   const update = (mutator: (s: ResumeStore) => Partial<ResumeStore>) => {
@@ -89,6 +108,8 @@ export const useResumeStore = create<ResumeStore>((set, get) => {
     template: persisted?.template ?? 'Modern',
     accent: persisted?.accent ?? '#22d3ee',
     darkMode: persisted?.darkMode ?? true,
+    density: persisted?.density ?? 'normal',
+    activeTab: 'personal',
     jdText: '',
     abA: '',
     abB: '',
@@ -98,6 +119,8 @@ export const useResumeStore = create<ResumeStore>((set, get) => {
     setAccent: (accent) => update(() => ({ accent })),
     toggleDarkMode: () => update((s) => ({ darkMode: !s.darkMode })),
     setDarkMode: (darkMode) => update(() => ({ darkMode })),
+    setDensity: (density) => update(() => ({ density })),
+    setActiveTab: (activeTab) => set({ activeTab }),
 
     loadSample: () => update(() => ({ data: sampleResume() })),
     clearAll: () => update(() => ({ data: defaultResume() })),
@@ -120,6 +143,8 @@ export const useResumeStore = create<ResumeStore>((set, get) => {
       update((s) => ({
         data: { ...s.data, education: s.data.education.filter((_, idx) => idx !== i) },
       })),
+    reorderEducation: (from, to) =>
+      update((s) => ({ data: { ...s.data, education: moveItem(s.data.education, from, to) } })),
 
     addExperience: () =>
       update((s) => ({
@@ -136,6 +161,8 @@ export const useResumeStore = create<ResumeStore>((set, get) => {
       update((s) => ({
         data: { ...s.data, experience: s.data.experience.filter((_, idx) => idx !== i) },
       })),
+    reorderExperience: (from, to) =>
+      update((s) => ({ data: { ...s.data, experience: moveItem(s.data.experience, from, to) } })),
 
     addSkillCategory: () =>
       update((s) => ({
@@ -176,6 +203,8 @@ export const useResumeStore = create<ResumeStore>((set, get) => {
       update((s) => ({
         data: { ...s.data, projects: s.data.projects.filter((_, idx) => idx !== i) },
       })),
+    reorderProject: (from, to) =>
+      update((s) => ({ data: { ...s.data, projects: moveItem(s.data.projects, from, to) } })),
 
     addCertification: () =>
       update((s) => ({

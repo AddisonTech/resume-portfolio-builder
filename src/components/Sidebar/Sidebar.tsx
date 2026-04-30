@@ -16,9 +16,11 @@ export function Sidebar() {
   const template = useResumeStore((s) => s.template);
   const accent = useResumeStore((s) => s.accent);
   const darkMode = useResumeStore((s) => s.darkMode);
+  const density = useResumeStore((s) => s.density);
   const setTemplate = useResumeStore((s) => s.setTemplate);
   const setAccent = useResumeStore((s) => s.setAccent);
   const toggleDarkMode = useResumeStore((s) => s.toggleDarkMode);
+  const setDensity = useResumeStore((s) => s.setDensity);
   const loadSample = useResumeStore((s) => s.loadSample);
   const clearAll = useResumeStore((s) => s.clearAll);
   const setData = useResumeStore((s) => s.setData);
@@ -54,6 +56,27 @@ export function Sidebar() {
           >
             <span className={styles.switchKnob} aria-hidden />
           </button>
+        </div>
+        <div className={styles.toggleRow}>
+          <span className={styles.toggleLabel}>Density</span>
+          <div className={styles.segGroup} role="group" aria-label="Editor density">
+            <button
+              type="button"
+              className={`${styles.segBtn} ${density === 'normal' ? styles.segBtnActive : ''}`}
+              onClick={() => setDensity('normal')}
+              aria-pressed={density === 'normal'}
+            >
+              Normal
+            </button>
+            <button
+              type="button"
+              className={`${styles.segBtn} ${density === 'compact' ? styles.segBtnActive : ''}`}
+              onClick={() => setDensity('compact')}
+              aria-pressed={density === 'compact'}
+            >
+              Compact
+            </button>
+          </div>
         </div>
       </div>
 

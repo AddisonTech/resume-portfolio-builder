@@ -8,6 +8,7 @@ export function EducationTab() {
   const add = useResumeStore((s) => s.addEducation);
   const update = useResumeStore((s) => s.updateEducation);
   const remove = useResumeStore((s) => s.removeEducation);
+  const reorder = useResumeStore((s) => s.reorderEducation);
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 880 }}>
@@ -43,7 +44,15 @@ export function EducationTab() {
       {list.map((edu, i) => {
         const title = `${edu.degree || 'New entry'} — ${edu.institution || '...'}`;
         return (
-          <EntryCard key={i} title={title} onRemove={() => remove(i)}>
+          <EntryCard
+            key={i}
+            title={title}
+            onRemove={() => remove(i)}
+            onMoveUp={() => reorder(i, i - 1)}
+            onMoveDown={() => reorder(i, i + 1)}
+            canMoveUp={i > 0}
+            canMoveDown={i < list.length - 1}
+          >
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <Field
                 label="Degree"

@@ -11,6 +11,7 @@ export function ExperienceTab() {
   const add = useResumeStore((s) => s.addExperience);
   const update = useResumeStore((s) => s.updateExperience);
   const remove = useResumeStore((s) => s.removeExperience);
+  const reorder = useResumeStore((s) => s.reorderExperience);
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 880 }}>
@@ -47,7 +48,15 @@ export function ExperienceTab() {
         const title = `${exp.position || 'New position'} @ ${exp.company || '...'}`;
         const analyses = analyzeAchievementsBlock(exp.achievements);
         return (
-          <EntryCard key={i} title={title} onRemove={() => remove(i)}>
+          <EntryCard
+            key={i}
+            title={title}
+            onRemove={() => remove(i)}
+            onMoveUp={() => reorder(i, i - 1)}
+            onMoveDown={() => reorder(i, i + 1)}
+            canMoveUp={i > 0}
+            canMoveDown={i < list.length - 1}
+          >
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <Field
                 label="Job title"

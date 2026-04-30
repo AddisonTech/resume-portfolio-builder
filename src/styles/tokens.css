@@ -44,6 +44,19 @@
   --good: #10b981;
   --warn: #f59e0b;
   --bad: #ef4444;
+
+  /* Density (driven by html[data-density]) */
+  --card-pad: 16px;
+  --card-gap: 12px;
+  --field-gap: 12px;
+  --section-gap: 16px;
+}
+
+html[data-density='compact'] {
+  --card-pad: 10px;
+  --card-gap: 8px;
+  --field-gap: 8px;
+  --section-gap: 10px;
 }
 
 *,

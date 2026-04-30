@@ -3,7 +3,6 @@ import {
   type ReactNode,
   useEffect,
   useRef,
-  useState,
 } from 'react';
 import styles from './Tabs.module.css';
 
@@ -16,16 +15,16 @@ export interface TabDef {
 
 interface Props {
   tabs: TabDef[];
-  initialId?: string;
+  active: string;
+  onChange: (id: string) => void;
 }
 
-export function Tabs({ tabs, initialId }: Props) {
-  const [active, setActive] = useState<string>(initialId ?? tabs[0]?.id ?? '');
+export function Tabs({ tabs, active, onChange }: Props) {
   const refs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
-    if (!tabs.find((t) => t.id === active) && tabs[0]) setActive(tabs[0].id);
-  }, [tabs, active]);
+    if (!tabs.find((t) => t.id === active) && tabs[0]) onChange(tabs[0].id);
+  }, [tabs, active, onChange]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const idx = tabs.findIndex((t) => t.id === active);
@@ -38,7 +37,7 @@ export function Tabs({ tabs, initialId }: Props) {
     else return;
     e.preventDefault();
     const target = tabs[next];
-    setActive(target.id);
+    onChange(target.id);
     refs.current[target.id]?.focus();
   };
 
@@ -67,7 +66,7 @@ export function Tabs({ tabs, initialId }: Props) {
               aria-selected={isActive}
               tabIndex={isActive ? 0 : -1}
               className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
-              onClick={() => setActive(t.id)}
+              onClick={() => onChange(t.id)}
             >
               {t.glyph && <span className={styles.glyph}>{t.glyph}</span>}
               <span>{t.label}</span>

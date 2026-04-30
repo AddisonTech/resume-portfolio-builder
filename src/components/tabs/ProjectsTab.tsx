@@ -11,6 +11,7 @@ export function ProjectsTab() {
   const add = useResumeStore((s) => s.addProject);
   const update = useResumeStore((s) => s.updateProject);
   const remove = useResumeStore((s) => s.removeProject);
+  const reorder = useResumeStore((s) => s.reorderProject);
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 880 }}>
@@ -47,7 +48,15 @@ export function ProjectsTab() {
         const title = proj.name || `Project ${i + 1}`;
         const analyses = analyzeAchievementsBlock(proj.highlights);
         return (
-          <EntryCard key={i} title={title} onRemove={() => remove(i)}>
+          <EntryCard
+            key={i}
+            title={title}
+            onRemove={() => remove(i)}
+            onMoveUp={() => reorder(i, i - 1)}
+            onMoveDown={() => reorder(i, i + 1)}
+            canMoveUp={i > 0}
+            canMoveDown={i < list.length - 1}
+          >
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <Field
                 label="Project name"

@@ -27,6 +27,9 @@ const FORM_TABS: TabDef[] = [
 export default function App() {
   const accent = useResumeStore((s) => s.accent);
   const darkMode = useResumeStore((s) => s.darkMode);
+  const density = useResumeStore((s) => s.density);
+  const activeTab = useResumeStore((s) => s.activeTab);
+  const setActiveTab = useResumeStore((s) => s.setActiveTab);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', accent);
@@ -39,6 +42,10 @@ export default function App() {
       document.documentElement.setAttribute('data-theme', 'light');
     }
   }, [darkMode]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-density', density);
+  }, [density]);
 
   return (
     <div
@@ -56,7 +63,7 @@ export default function App() {
           minWidth: 0,
         }}
       >
-        <Tabs tabs={FORM_TABS} />
+        <Tabs tabs={FORM_TABS} active={activeTab} onChange={setActiveTab} />
       </main>
     </div>
   );
