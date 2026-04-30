@@ -42,3 +42,7 @@ npm run preview  # serve the built dist/ locally
 ```
 
 The deploy workflow runs on every push to `main`, builds the app, and publishes to GitHub Pages.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
