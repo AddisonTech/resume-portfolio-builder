@@ -1,21 +1,3 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-.eggs/
-
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
-# Streamlit
-.streamlit/secrets.toml
-
 # Node / Vite
 node_modules/
 dist/
@@ -33,9 +15,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
-# Screenshot helper
-take_screenshot.py
 
 # Output files
 *.pdf
