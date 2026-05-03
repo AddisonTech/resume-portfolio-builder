@@ -1,4 +1,4 @@
-// Bullet strength analyzer. Ported from analyzers.py — same scoring math:
+// Bullet strength analyzer. Ported from analyzers.py - same scoring math:
 //   has_number  : digit OR english number word
 //   has_verb    : first word (alpha + apostrophe only, lowercased) is in ACTION_VERBS
 //   length_ok   : 30 <= length <= 200
@@ -23,7 +23,7 @@ export function analyzeBullet(line: string): BulletAnalysis {
   const trimmed = (line ?? '').trim();
   const length = trimmed.length;
 
-  // First whitespace-separated token — strip everything except letters and apostrophes.
+  // First whitespace-separated token - strip everything except letters and apostrophes.
   let firstWord = '';
   const tokens = trimmed.split(/\s+/);
   for (const tok of tokens) {

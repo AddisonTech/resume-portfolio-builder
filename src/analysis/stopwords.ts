@@ -1,5 +1,5 @@
 // English stopwords + resume/job-posting filler. Ported verbatim from
-// jd_match.py _STOPWORDS — order doesn't matter, dedup by Set.
+// jd_match.py _STOPWORDS - order doesn't matter, dedup by Set.
 
 export const STOPWORDS: ReadonlySet<string> = new Set<string>([
   // articles, conjunctions, prepositions

@@ -133,7 +133,7 @@ export function migratePersisted(raw: unknown): PersistedEnvelope | null {
     return null;
   }
 
-  // Tagged envelope (v2+) — accept any version that round-trips through validation.
+  // Tagged envelope (v2+) - accept any version that round-trips through validation.
   if (typeof raw.version === 'number' && validateResumeData(raw.data)) {
     return {
       version: PERSIST_VERSION,

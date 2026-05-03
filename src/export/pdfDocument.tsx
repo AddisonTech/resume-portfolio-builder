@@ -1,5 +1,5 @@
 // PDF document for @react-pdf/renderer. Mirrors the polished generate_pdf
-// from app.py — Helvetica family, accent-colored 2-tone dividers, two-column
+// from app.py - Helvetica family, accent-colored 2-tone dividers, two-column
 // dates, accent bullet glyph.
 
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';

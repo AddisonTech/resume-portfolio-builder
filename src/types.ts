@@ -1,4 +1,4 @@
-// Resume domain model — mirrors the Python `_default()` shape so JSON
+// Resume domain model - mirrors the Python `_default()` shape so JSON
 // payloads round-trip between the legacy Streamlit app and this React port.
 
 export interface Personal {

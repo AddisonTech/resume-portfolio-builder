@@ -42,7 +42,7 @@ export function EducationTab() {
       )}
 
       {list.map((edu, i) => {
-        const title = `${edu.degree || 'New entry'} — ${edu.institution || '...'}`;
+        const title = `${edu.degree || 'New entry'} - ${edu.institution || '...'}`;
         return (
           <EntryCard
             key={i}

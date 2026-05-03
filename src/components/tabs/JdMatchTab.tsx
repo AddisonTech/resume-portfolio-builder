@@ -114,7 +114,7 @@ export function JdMatchTab() {
                   Tokenize the JD, drop stopwords + filler ("team", "experience",
                   "role"…), then rank single words and 2-word phrases by frequency.
                 </li>
-                <li>Phrases get a 1.6× weight bonus — they carry more signal than single words.</li>
+                <li>Phrases get a 1.6× weight bonus - they carry more signal than single words.</li>
                 <li>
                   Your resume corpus is everything an ATS would scan: bullets, summary, skills,
                   project highlights, position titles, certifications.

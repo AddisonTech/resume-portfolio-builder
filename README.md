@@ -4,20 +4,20 @@ A fully client-side resume builder. Fill in your details, see live bullet-streng
 
 **Live demo:** https://addisontech.github.io/resume-portfolio-builder/
 
-![App — main view](screenshots/app_main.png)
+![App - main view](screenshots/app_main.png)
 
 ## Features
 
 - Nine tabs: Personal, Education, Experience, Skills, Projects, Certifications, JD Match, A/B Test, Preview
-- Live bullet analyzer — strong verb + quantified outcome + length sweet spot, scored as you type
-- Job description matcher — paste a posting, get a score plus matched and missing keyword chips
-- A/B bullet test — score two versions side by side with a dimension-by-dimension verdict
-- Resume health meter — eight-bucket score out of 100 with breakdown
+- Live bullet analyzer - strong verb + quantified outcome + length sweet spot, scored as you type
+- Job description matcher - paste a posting, get a score plus matched and missing keyword chips
+- A/B bullet test - score two versions side by side with a dimension-by-dimension verdict
+- Resume health meter - eight-bucket score out of 100 with breakdown
 - Reorder controls on Education, Experience, and Project entries
 - Three templates (Modern, Classic, Minimal) with a custom accent color picker
 - Dark mode toggle and Normal/Compact density, persisted to localStorage along with all your form data
 - Exports: standalone HTML, JSON, and PDF (PDF renderer is lazy-loaded so the initial bundle stays small)
-- Schema-versioned JSON — exported files carry a version envelope and older shapes migrate forward on load
+- Schema-versioned JSON - exported files carry a version envelope and older shapes migrate forward on load
 
 | Dark | Preview |
 | --- | --- |
@@ -45,4 +45,4 @@ The deploy workflow runs on every push to `main`, builds the app, and publishes 
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).

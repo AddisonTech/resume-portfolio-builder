@@ -22,12 +22,12 @@ export function saveToLocalStorage<T>(key: string, value: T): void {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // quota / private mode — fail silently
+    // quota / private mode - fail silently
   }
 }
 
 // Schema-aware persisted-state loader. Returns null if the stored blob is
-// missing, malformed, or fails validation — caller falls back to defaults.
+// missing, malformed, or fails validation - caller falls back to defaults.
 export function loadPersistedEnvelope(key: string): PersistedEnvelope | null {
   try {
     if (typeof window === 'undefined') return null;
