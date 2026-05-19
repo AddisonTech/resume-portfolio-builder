@@ -2,7 +2,7 @@
 
 A fully client-side resume builder. Fill in your details, see live bullet-strength scores as you type, match your resume against any job description, A/B test rewrites of the same bullet, and export to PDF, HTML, or JSON. Nothing leaves the browser.
 
-**Live demo:** https://addisontech.github.io/resume-portfolio-builder/
+**Live demo:** [https://addisontech.github.io/resume-portfolio-builder/](https://addisontech.github.io/demos/resume-builder.html)
 
 ![App - main view](screenshots/app_main.png)
 
