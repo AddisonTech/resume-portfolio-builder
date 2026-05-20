@@ -19,4 +19,5 @@ Thumbs.db
 # Output files
 *.pdf
 *.html
+!index.html
 resume.json
